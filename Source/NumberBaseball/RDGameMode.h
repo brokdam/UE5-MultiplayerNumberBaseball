@@ -13,4 +13,12 @@ class NUMBERBASEBALL_API ARDGameMode : public AGameModeBase
 	
 public: 
 	ARDGameMode();
+
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	TArray<int32> Answer;
+
+	void GenerateRandomNumbers();
 };
