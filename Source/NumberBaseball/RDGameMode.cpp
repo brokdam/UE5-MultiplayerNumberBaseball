@@ -19,9 +19,9 @@ void ARDGameMode::BeginPlay()
 	GenerateRandomNumbers();
 
 	UE_LOG(LogTemp, Warning, TEXT("Answer: %d %d %d"), Answer[0], Answer[1], Answer[2]);
-	UE_LOG(LogTemp, Warning, TEXT("472? %d"), IsValidInput(TEXT("472"))); 
-	UE_LOG(LogTemp, Warning, TEXT("47?  %d"), IsValidInput(TEXT("47")));  
-	UE_LOG(LogTemp, Warning, TEXT("447? %d"), IsValidInput(TEXT("447"))); 
+	ProcessGuess(TEXT("12"));   // 잘못된 입력 → 기회 유지
+	ProcessGuess(TEXT("429"));  // 채점 + 기회 차감
+	ProcessGuess(TEXT("447"));  // 중복 → 기회 유지
 }
 
 void ARDGameMode::GenerateRandomNumbers()
@@ -94,4 +94,37 @@ bool ARDGameMode::IsValidInput(const FString& Input) const
 	}
 
 	return true;
+}
+
+void ARDGameMode::ResetGame()
+{
+	GenerateRandomNumbers();
+	RemainingAttempts = 3;
+}
+
+void ARDGameMode::ProcessGuess(const FString& Input)
+{
+	// 입력 확인
+	if (!IsValidInput(Input))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Invalid input"));
+		return;
+	}
+
+	// 채점
+	const FString Result = CheckAnswer(Input);
+
+	// 기회 차감
+	RemainingAttempts--;
+	UE_LOG(LogTemp, Warning, TEXT("%s -> %s (attempts left: %d)"), *Input, *Result, RemainingAttempts);
+
+	// 승패 판정
+	if (Result == TEXT("3S0B"))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Win!"));
+	}
+	else if (RemainingAttempts <= 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Draw"));
+	}
 }
