@@ -21,4 +21,5 @@ private:
 	TArray<int32> Answer;
 	void GenerateRandomNumbers();
 	FString CheckAnswer(const FString& Input) const;
+	bool IsValidInput(const FString& Input) const;
 };

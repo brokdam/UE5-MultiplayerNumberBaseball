@@ -19,7 +19,9 @@ void ARDGameMode::BeginPlay()
 	GenerateRandomNumbers();
 
 	UE_LOG(LogTemp, Warning, TEXT("Answer: %d %d %d"), Answer[0], Answer[1], Answer[2]);
-	UE_LOG(LogTemp, Warning, TEXT("429 -> %s"), *CheckAnswer(TEXT("429")));
+	UE_LOG(LogTemp, Warning, TEXT("472? %d"), IsValidInput(TEXT("472"))); 
+	UE_LOG(LogTemp, Warning, TEXT("47?  %d"), IsValidInput(TEXT("47")));  
+	UE_LOG(LogTemp, Warning, TEXT("447? %d"), IsValidInput(TEXT("447"))); 
 }
 
 void ARDGameMode::GenerateRandomNumbers()
@@ -63,4 +65,33 @@ FString ARDGameMode::CheckAnswer(const FString& Input) const
 	}
 
 	return FString::Printf(TEXT("%dS %dB"), Strike, Ball);
+}
+
+bool ARDGameMode::IsValidInput(const FString& Input) const
+{
+	if (Input.Len() != 3)
+	{
+		return false;
+	}
+
+	TArray<int32> Seen;
+	for (int32 i = 0; i < Input.Len(); ++i)
+	{
+		const TCHAR C = Input[i];
+
+		if (C < '1' || C > '9')
+		{
+			return false;
+		}
+
+		const int32 Digit = C - '0';
+
+		if (Seen.Contains(Digit))
+		{
+			return false;
+		}
+		Seen.Add(Digit);
+	}
+
+	return true;
 }
