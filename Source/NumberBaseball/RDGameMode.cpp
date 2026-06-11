@@ -19,9 +19,9 @@ void ARDGameMode::BeginPlay()
 	GenerateRandomNumbers();
 
 	UE_LOG(LogTemp, Warning, TEXT("Answer: %d %d %d"), Answer[0], Answer[1], Answer[2]);
-	ProcessGuess(TEXT("12"));   // Àß¸øµÈ ÀÔ·Â ¡æ ±âÈ¸ À¯Áö
-	ProcessGuess(TEXT("429"));  // Ã¤Á¡ + ±âÈ¸ Â÷°¨
-	ProcessGuess(TEXT("447"));  // Áßº¹ ¡æ ±âÈ¸ À¯Áö
+	ProcessGuess(TEXT("12"));   // ì˜ëª»ëœ ì…ë ¥ â†’ ê¸°íšŒ ìœ ì§€
+	ProcessGuess(TEXT("429"));  // ì±„ì  + ê¸°íšŒ ì°¨ê°
+	ProcessGuess(TEXT("447"));  // ì¤‘ë³µ â†’ ê¸°íšŒ ìœ ì§€
 }
 
 void ARDGameMode::GenerateRandomNumbers()
@@ -40,7 +40,7 @@ void ARDGameMode::GenerateRandomNumbers()
 	Answer.Add(Candidates[2]);
 }
 
-FString ARDGameMode::CheckAnswer(const FString& Input) const
+FRDGuessResult ARDGameMode::CheckAnswer(const FString& Input) const
 {
 	int32 Strike = 0;
 	int32 Ball = 0;
@@ -59,12 +59,7 @@ FString ARDGameMode::CheckAnswer(const FString& Input) const
 		}
 	}
 
-	if (Strike == 0 && Ball == 0)
-	{
-		return TEXT("OUT");
-	}
-
-	return FString::Printf(TEXT("%dS %dB"), Strike, Ball);
+	return FRDGuessResult{ Strike, Ball };
 }
 
 bool ARDGameMode::IsValidInput(const FString& Input) const
@@ -104,22 +99,33 @@ void ARDGameMode::ResetGame()
 
 void ARDGameMode::ProcessGuess(const FString& Input)
 {
-	// ÀÔ·Â È®ÀÎ
+	// ì…ë ¥ í™•ì¸
 	if (!IsValidInput(Input))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Invalid input"));
 		return;
 	}
 
-	// Ã¤Á¡
-	const FString Result = CheckAnswer(Input);
+	// ì±„ì 
+	const FRDGuessResult Result = CheckAnswer(Input);
 
-	// ±âÈ¸ Â÷°¨
+	// ê¸°íšŒ ì°¨ê°
 	RemainingAttempts--;
-	UE_LOG(LogTemp, Warning, TEXT("%s -> %s (attempts left: %d)"), *Input, *Result, RemainingAttempts);
+	
+	FString Display;
+	if (Result.Strike == 0 && Result.Ball == 0)
+	{
+		Display = TEXT("OUT");
+	}
+	else
+	{
+		Display = FString::Printf(TEXT("%dS %dB"), Result.Strike, Result.Ball);
+	}
 
-	// ½ÂÆĞ ÆÇÁ¤
-	if (Result == TEXT("3S0B"))
+	UE_LOG(LogTemp, Warning, TEXT("%s -> %s (attempts left: %d)"), *Input, *Display, RemainingAttempts);
+
+	// ìŠ¹íŒ¨ íŒì •
+	if (Result.Strike == 3)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Win!"));
 	}
