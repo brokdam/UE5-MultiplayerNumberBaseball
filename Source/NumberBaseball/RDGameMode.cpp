@@ -95,10 +95,16 @@ void ARDGameMode::ResetGame()
 {
 	GenerateRandomNumbers();
 	RemainingAttempts = 3;
+	bGameOver = false;
 }
 
 void ARDGameMode::ProcessGuess(const FString& Input)
 {
+	if (bGameOver)   
+	{
+		return;
+	}
+	
 	// 입력 확인
 	if (!IsValidInput(Input))
 	{
@@ -128,9 +134,11 @@ void ARDGameMode::ProcessGuess(const FString& Input)
 	if (Result.Strike == 3)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Win!"));
+		bGameOver = true;
 	}
 	else if (RemainingAttempts <= 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Draw"));
+		bGameOver = true;
 	}
 }
