@@ -8,7 +8,7 @@ void ARDPlayerController::ServerSubmitGuess_Implementation(const FString& Guess)
 	ARDGameMode* GM = GetWorld()->GetAuthGameMode<ARDGameMode>();
 	if (GM)
 	{
-		GM->ProcessGuess(Guess);
+		GM->ProcessGuess(Guess, this);
 	}
 }
 

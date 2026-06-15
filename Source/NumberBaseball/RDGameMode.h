@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "GameFramework/PlayerController.h"
 #include "RDGameMode.generated.h"
 
 USTRUCT(BlueprintType)
@@ -25,7 +26,7 @@ class NUMBERBASEBALL_API ARDGameMode : public AGameModeBase
 	
 public: 
 	ARDGameMode();
-	void ProcessGuess(const FString& Input);
+	void ProcessGuess(const FString& Input, APlayerController* Sender);
 	bool bGameOver = false;
 
 protected:
@@ -33,7 +34,6 @@ protected:
 
 private:
 	TArray<int32> Answer;
-	int32 RemainingAttempts = 3; 
 	
 	void GenerateRandomNumbers();
 	FRDGuessResult CheckAnswer(const FString& Input) const;

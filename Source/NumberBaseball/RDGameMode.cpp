@@ -19,9 +19,6 @@ void ARDGameMode::BeginPlay()
 	GenerateRandomNumbers();
 
 	UE_LOG(LogTemp, Warning, TEXT("Answer: %d %d %d"), Answer[0], Answer[1], Answer[2]);
-	ProcessGuess(TEXT("12"));   // 잘못된 입력 → 기회 유지
-	ProcessGuess(TEXT("429"));  // 채점 + 기회 차감
-	ProcessGuess(TEXT("447"));  // 중복 → 기회 유지
 }
 
 void ARDGameMode::GenerateRandomNumbers()
@@ -94,11 +91,10 @@ bool ARDGameMode::IsValidInput(const FString& Input) const
 void ARDGameMode::ResetGame()
 {
 	GenerateRandomNumbers();
-	RemainingAttempts = 3;
 	bGameOver = false;
 }
 
-void ARDGameMode::ProcessGuess(const FString& Input)
+void ARDGameMode::ProcessGuess(const FString& Input, APlayerController* Sender)
 {
 	if (bGameOver)   
 	{
@@ -108,27 +104,22 @@ void ARDGameMode::ProcessGuess(const FString& Input)
 	// 입력 확인
 	if (!IsValidInput(Input))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Invalid input"));
 		return;
 	}
 
+	ARDPlayerState* PS = Sender->GetPlayerState<ARDPlayerState>();
+	if (!PS)
+	{
+		return;
+	}
+	
 	// 채점
 	const FRDGuessResult Result = CheckAnswer(Input);
 
 	// 기회 차감
-	RemainingAttempts--;
+	PS->RemainingAttempts--;
 	
-	FString Display;
-	if (Result.Strike == 0 && Result.Ball == 0)
-	{
-		Display = TEXT("OUT");
-	}
-	else
-	{
-		Display = FString::Printf(TEXT("%dS %dB"), Result.Strike, Result.Ball);
-	}
-
-	UE_LOG(LogTemp, Warning, TEXT("%s -> %s (attempts left: %d)"), *Input, *Display, RemainingAttempts);
+	UE_LOG(LogTemp, Warning, TEXT("%s -> attempts left: %d"), *Input, PS->RemainingAttempts);
 
 	// 승패 판정
 	if (Result.Strike == 3)
@@ -136,7 +127,7 @@ void ARDGameMode::ProcessGuess(const FString& Input)
 		UE_LOG(LogTemp, Warning, TEXT("Win!"));
 		bGameOver = true;
 	}
-	else if (RemainingAttempts <= 0)
+	else if (PS->RemainingAttempts <= 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Draw"));
 		bGameOver = true;
