@@ -119,7 +119,11 @@ void ARDGameMode::ProcessGuess(const FString& Input, APlayerController* Sender)
 	// 기회 차감
 	PS->RemainingAttempts--;
 	
-	UE_LOG(LogTemp, Warning, TEXT("%s -> attempts left: %d"), *Input, PS->RemainingAttempts);
+	ARDPlayerController* PC = Cast<ARDPlayerController>(Sender);
+	if (PC)
+	{
+		PC->MulticastReceiveResult(Result, PS->RemainingAttempts);
+	}
 
 	// 승패 판정
 	if (Result.Strike == 3)

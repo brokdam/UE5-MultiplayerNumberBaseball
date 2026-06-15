@@ -4,6 +4,8 @@
 #include "GameFramework/PlayerController.h"
 #include "RDPlayerController.generated.h"
 
+struct FRDGuessResult;
+
 UCLASS()
 class NUMBERBASEBALL_API ARDPlayerController : public APlayerController
 {
@@ -12,6 +14,9 @@ class NUMBERBASEBALL_API ARDPlayerController : public APlayerController
 public: 
 	UFUNCTION(Server, Reliable)
 	void ServerSubmitGuess(const FString& Guess);
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastReceiveResult(const FRDGuessResult& Result, int32 AttemptsLeft);
 	
 protected:
 	virtual void SetupInputComponent() override;

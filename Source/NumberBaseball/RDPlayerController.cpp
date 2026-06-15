@@ -12,6 +12,23 @@ void ARDPlayerController::ServerSubmitGuess_Implementation(const FString& Guess)
 	}
 }
 
+void ARDPlayerController::MulticastReceiveResult_Implementation(const FRDGuessResult& Result, int32 AttemptsLeft)
+{
+	UE_LOG(LogTemp, Warning, TEXT("[Multicast] 실행됨 - %s"), *GetName());
+
+	FString Display;
+	if (Result.Strike == 0 && Result.Ball == 0)
+	{
+		Display = TEXT("OUT");
+	}
+	else
+	{
+		Display = FString::Printf(TEXT("%dS %dB"), Result.Strike, Result.Ball);
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("[Client] Result: %s, attempts left: %d"), *Display, AttemptsLeft);
+}
+
 void ARDPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
