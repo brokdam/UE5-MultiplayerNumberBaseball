@@ -27,7 +27,6 @@ class NUMBERBASEBALL_API ARDGameMode : public AGameModeBase
 public: 
 	ARDGameMode();
 	void ProcessGuess(const FString& Input, APlayerController* Sender);
-	bool bGameOver = false;
 
 protected:
 	virtual void BeginPlay() override;

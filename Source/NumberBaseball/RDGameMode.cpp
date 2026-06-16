@@ -7,7 +7,6 @@
 
 ARDGameMode::ARDGameMode()
 {
-	PlayerControllerClass = ARDPlayerController::StaticClass();
 	PlayerStateClass = ARDPlayerState::StaticClass();
 	GameStateClass = ARDGameState::StaticClass();
 }
@@ -17,8 +16,6 @@ void ARDGameMode::BeginPlay()
 	Super::BeginPlay();
 
 	GenerateRandomNumbers();
-
-	UE_LOG(LogTemp, Warning, TEXT("Answer: %d %d %d"), Answer[0], Answer[1], Answer[2]);
 }
 
 void ARDGameMode::GenerateRandomNumbers()
@@ -91,24 +88,20 @@ bool ARDGameMode::IsValidInput(const FString& Input) const
 void ARDGameMode::ResetGame()
 {
 	GenerateRandomNumbers();
-	bGameOver = false;
 }
 
 void ARDGameMode::ProcessGuess(const FString& Input, APlayerController* Sender)
 {
-	if (bGameOver)   
+	ARDPlayerState* PS = Sender->GetPlayerState<ARDPlayerState>();
+	if (!PS) return;
+	
+	if (PS->bGameOver)   
 	{
 		return;
 	}
 	
 	// 입력 확인
 	if (!IsValidInput(Input))
-	{
-		return;
-	}
-
-	ARDPlayerState* PS = Sender->GetPlayerState<ARDPlayerState>();
-	if (!PS)
 	{
 		return;
 	}
@@ -128,12 +121,10 @@ void ARDGameMode::ProcessGuess(const FString& Input, APlayerController* Sender)
 	// 승패 판정
 	if (Result.Strike == 3)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Win!"));
-		bGameOver = true;
+		PS->bGameOver = true;
 	}
 	else if (PS->RemainingAttempts <= 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Draw"));
-		bGameOver = true;
+		PS->bGameOver = true;
 	}
 }
