@@ -27,6 +27,7 @@ class NUMBERBASEBALL_API ARDGameMode : public AGameModeBase
 public: 
 	ARDGameMode();
 	void ProcessGuess(const FString& Input, APlayerController* Sender);
+	static bool IsValidInput(const FString& Input);
 
 protected:
 	virtual void BeginPlay() override;
@@ -36,6 +37,5 @@ private:
 	
 	void GenerateRandomNumbers();
 	FRDGuessResult CheckAnswer(const FString& Input) const;
-	bool IsValidInput(const FString& Input) const;
 	void ResetGame();
 };

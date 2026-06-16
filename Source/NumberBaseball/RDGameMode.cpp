@@ -56,7 +56,7 @@ FRDGuessResult ARDGameMode::CheckAnswer(const FString& Input) const
 	return FRDGuessResult{ Strike, Ball };
 }
 
-bool ARDGameMode::IsValidInput(const FString& Input) const
+bool ARDGameMode::IsValidInput(const FString& Input)
 {
 	if (Input.Len() != 3)
 	{

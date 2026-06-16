@@ -1,6 +1,8 @@
 #include "RDChatInput.h"
 #include "Components/EditableTextBox.h"
 #include "RDPlayerController.h"
+#include "RDGameMode.h"
+
 
 void URDChatInput::NativeConstruct()
 {
@@ -24,6 +26,12 @@ void URDChatInput::OnChatInputTextCommitted(const FText& Text, ETextCommit::Type
 {
 	if (CommitMethod == ETextCommit::OnEnter)
 	{
+		if (!ARDGameMode::IsValidInput(Text.ToString()))
+		{
+			Text_Result->SetText(FText::FromString(TEXT("다시 입력하세요")));
+			return;
+		}
+		
 		APlayerController* OwningPlayerController = GetOwningPlayer();
 		if (IsValid(OwningPlayerController) == true)
 		{
