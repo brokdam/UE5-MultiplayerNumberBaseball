@@ -1,10 +1,11 @@
 #include "RDPlayerController.h"
 #include "RDGameMode.h"
+#include "RDChatInput.h"
+#include "Kismet/KismetSystemLibrary.h"
+
 
 void ARDPlayerController::ServerSubmitGuess_Implementation(const FString& Guess)
 {
-	UE_LOG(LogTemp, Warning, TEXT("[Server] ServerSubmitGuess running, guess: %s"), *Guess);
-	
 	ARDGameMode* GM = GetWorld()->GetAuthGameMode<ARDGameMode>();
 	if (GM)
 	{
@@ -14,8 +15,6 @@ void ARDPlayerController::ServerSubmitGuess_Implementation(const FString& Guess)
 
 void ARDPlayerController::MulticastReceiveResult_Implementation(const FRDGuessResult& Result, int32 AttemptsLeft)
 {
-	UE_LOG(LogTemp, Warning, TEXT("[Multicast] 실행됨 - %s"), *GetName());
-
 	FString Display;
 	if (Result.Strike == 0 && Result.Ball == 0)
 	{
@@ -26,7 +25,42 @@ void ARDPlayerController::MulticastReceiveResult_Implementation(const FRDGuessRe
 		Display = FString::Printf(TEXT("%dS %dB"), Result.Strike, Result.Ball);
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("[Client] Result: %s, attempts left: %d"), *Display, AttemptsLeft);
+	if (ChatInputWidgetInstance)
+	{
+		ChatInputWidgetInstance->UpdateResult(Display, AttemptsLeft);
+	}
+}
+
+void ARDPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	if (!IsLocalController()) return;
+
+	FInputModeUIOnly InputModeUIOnly;
+	SetInputMode(InputModeUIOnly);
+
+	if (IsValid(ChatInputWidgetClass) == true)
+	{
+		ChatInputWidgetInstance = CreateWidget<URDChatInput>(this, ChatInputWidgetClass);
+
+		if (IsValid(ChatInputWidgetInstance) == true)
+		{
+			ChatInputWidgetInstance->AddToViewport();
+		}
+	}
+}
+
+void ARDPlayerController::SetChatMessageString(const FString& InChatMessageString)
+{
+	ChatMessageString = InChatMessageString;
+	PrintChatMessageString(ChatMessageString);
+	ServerSubmitGuess(ChatMessageString);
+}
+
+void ARDPlayerController::PrintChatMessageString(const FString& InChatMessageString)
+{
+	UKismetSystemLibrary::PrintString(this, ChatMessageString, true, true, FLinearColor::Red, 5.0f);
 }
 
 void ARDPlayerController::SetupInputComponent()
@@ -38,6 +72,5 @@ void ARDPlayerController::SetupInputComponent()
 
 void ARDPlayerController::OnTestSubmit()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[Client] OnTestSubmit -> calling ServerSubmitGuess"));
 	ServerSubmitGuess(TEXT("429"));
 }
