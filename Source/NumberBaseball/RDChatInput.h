@@ -31,6 +31,11 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> Text_Attempts;
 	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> Text_ResultMessage;
+
+	void ShowGameResult(const FString& Message);
+	
 	void UpdateResult(const FString& Result, int32 AttemptsLeft);
 
 };

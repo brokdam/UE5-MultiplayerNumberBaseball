@@ -51,6 +51,14 @@ void ARDPlayerController::BeginPlay()
 	}
 }
 
+void ARDPlayerController::MulticastReceiveGameResult_Implementation(const FString& Message)
+{
+	if (ChatInputWidgetInstance)
+	{
+		ChatInputWidgetInstance->ShowGameResult(Message);
+	}
+}
+
 void ARDPlayerController::SetChatMessageString(const FString& InChatMessageString)
 {
 	ChatMessageString = InChatMessageString;

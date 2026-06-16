@@ -122,9 +122,46 @@ void ARDGameMode::ProcessGuess(const FString& Input, APlayerController* Sender)
 	if (Result.Strike == 3)
 	{
 		PS->bGameOver = true;
+		FString WinMessage = FString::Printf(TEXT("%s 승리!"), *PS->GetPlayerName());
+
+		for (APlayerState* PlayerState : GameState->PlayerArray)
+		{
+			ARDPlayerController* EachPC = Cast<ARDPlayerController>(
+				PlayerState->GetPlayerController()
+			);
+			if (EachPC)
+			{
+				EachPC->MulticastReceiveGameResult(WinMessage);
+			}
+		}
 	}
 	else if (PS->RemainingAttempts <= 0)
 	{
 		PS->bGameOver = true;
+
+		bool bAllGameOver = true;
+		for (APlayerState* PlayerState : GameState->PlayerArray)
+		{
+			ARDPlayerState* OtherPS = Cast<ARDPlayerState>(PlayerState);
+			if (OtherPS && !OtherPS->bGameOver)
+			{
+				bAllGameOver = false;
+				break;
+			}
+		}
+
+		if (bAllGameOver)
+		{
+			for (APlayerState* PlayerState : GameState->PlayerArray)
+			{
+				ARDPlayerController* EachPC = Cast<ARDPlayerController>(
+					PlayerState->GetPlayerController()
+				);
+				if (EachPC)
+				{
+					EachPC->MulticastReceiveGameResult(TEXT("무승부!"));
+				}
+			}
+		}
 	}
 }

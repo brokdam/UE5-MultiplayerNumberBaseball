@@ -46,6 +46,14 @@ void URDChatInput::OnChatInputTextCommitted(const FText& Text, ETextCommit::Type
 	}
 }
 
+void URDChatInput::ShowGameResult(const FString& Message)
+{
+	if (Text_ResultMessage)
+	{
+		Text_ResultMessage->SetText(FText::FromString(Message));
+	}
+}
+
 void URDChatInput::UpdateResult(const FString& Result, int32 AttemptsLeft)
 {
 	if (Text_Result)

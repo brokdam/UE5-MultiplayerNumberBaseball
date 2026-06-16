@@ -28,6 +28,9 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastReceiveResult(const FRDGuessResult& Result, int32 AttemptsLeft);
 	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastReceiveGameResult(const FString& Message);
+	
 	void SetChatMessageString(const FString& InChatMessageString);
 	void PrintChatMessageString(const FString& InChatMessageString);
 	
